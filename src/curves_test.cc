@@ -19,7 +19,8 @@ using namespace e2c2;
  * @p odd_test()
  * @brief Test of odd curve functionality
  */
-void odd_test() {
+auto odd_test() -> void
+{
     ZZ_p::init(power2_ZZ(255) - 19);  /// Sets F_p
     ZZ_pE::init(ZZ_pX(1, 1));  /// Sets F_(p^n) = F_(p^1)
 
@@ -36,7 +37,8 @@ void odd_test() {
  * @p binary_test()
  * @brief Test of binary curve functionality
  */
-void binary_test() {
+auto binary_test() -> void
+{
     /// Our irred. polynomial is x^163 + x^7 + x^6 + x^3 + 1, per FIPS 186-3
     GF2E::init(GF2X(163, 1) + GF2X(7, 1) + GF2X(6, 1) + GF2X(3, 1) +
                GF2X(0, 1));
@@ -63,7 +65,8 @@ void binary_test() {
  * @p twisted_test()
  * @brief Test of twisted curve functionality
  */
-void twisted_test() {
+auto twisted_test() -> void
+{
     ZZ_p::init(power2_ZZ(255) - 19);  /// Sets F_p
     ZZ_pE::init(ZZ_pX(1, 1));  /// Sets F_(p^n) = F_(p^1)
 
@@ -80,7 +83,8 @@ void twisted_test() {
  * @p main(int argc, char *argv[])
  * @brief Runs appropriate curve test
  */
-int main(int argc, char *argv[]) {
+auto main(int argc, char *argv[]) -> int
+{
     try {
         if (argc == 1)
             binary_test();

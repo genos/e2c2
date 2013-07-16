@@ -23,7 +23,9 @@
 namespace e2c2 {
 
     /// Per MOL paper, \f$\sqrt{\alpha} = \alpha^{2^{m-1}}\f$
-    inline const NTL::GF2E gf2m_sqrt(const NTL::GF2E& alpha, const long& m) {
+    inline const auto gf2m_sqrt(const NTL::GF2E& alpha, const long& m) ->
+        NTL::GF2E
+    {
         auto s = alpha;
         for (auto i = 0L; i < m - 1; ++i) {
             sqr(s, s);
@@ -33,7 +35,9 @@ namespace e2c2 {
 
 
     /// Half-Trace function
-    inline const NTL::GF2E half_trace(const NTL::GF2E& alpha, const long m) {
+    inline const auto half_trace(const NTL::GF2E& alpha, const long m) ->
+        NTL::GF2E
+    {
         auto ht = NTL::GF2E::zero();
         auto e = NTL::to_ZZ(1);
         for (auto i = 0L; i <= (m - 1) / 2; ++i) {
@@ -45,8 +49,9 @@ namespace e2c2 {
 
 
     /// MOL's Algorithm 1 to compute d1
-    inline const NTL::GF2E mol_alg_1(const long& n, const NTL::GF2E& a2,
-                            const NTL::GF2E& a6) {
+    inline const auto mol_alg_1(const long& n, const NTL::GF2E& a2,
+            const NTL::GF2E& a6) -> NTL::GF2E
+    {
         auto t = trace(a2), r = trace(a6);
         auto a6_2 = gf2m_sqrt(a6, n);
         auto a6_4 = gf2m_sqrt(a6_2, n);
@@ -102,8 +107,9 @@ namespace e2c2 {
 
     /// Construct a Binary Edwards Curve from Weierstrass Parameters, degree of
     /// field extension, and supplied cardinality of curve
-    inline BinaryCurve from_weierstrass(const long n, const NTL::ZZ& m,
-            const NTL::GF2E& a2, const NTL::GF2E& a6) {
+    inline auto from_weierstrass(const long n, const NTL::ZZ& m,
+            const NTL::GF2E& a2, const NTL::GF2E& a6) -> BinaryCurve
+    {
         auto c = mol_alg_1(n, a2, a6);
         auto d = NTL::sqr(c) + c + gf2m_sqrt(a6, n) / NTL::sqr(c);
         return BinaryCurve(c, d, m);
@@ -111,9 +117,10 @@ namespace e2c2 {
 
 
     /// MOL's birational map from Weierstrass curve to Affine Binary Edwards
-    inline void mol_bm_aff(NTL::GF2E& x, NTL::GF2E& y, const NTL::GF2E& u,
-                  const NTL::GF2E& v, const long m, const NTL::GF2E& d1,
-                  const NTL::GF2E& d2, const NTL::GF2E& a2) {
+    inline auto mol_bm_aff(NTL::GF2E& x, NTL::GF2E& y, const NTL::GF2E& u,
+            const NTL::GF2E& v, const long m, const NTL::GF2E& d1,
+            const NTL::GF2E& d2, const NTL::GF2E& a2) -> void
+    {
         auto b = half_trace(sqr(d1) + d2 + a2, m), tmp = sqr(d1) + d1 + d2;
         auto z = sqr(u) + d1 * u + sqr(d1) * tmp;
         x = d1 * (b * u + v + (sqr(d1) + d1) * tmp);
@@ -125,9 +132,11 @@ namespace e2c2 {
 
     /// MOL's birational map from Weierstrass curve to Projective Binary
     /// Edwards
-    inline void mol_bm_proj(NTL::GF2E& x, NTL::GF2E& y, NTL::GF2E& z,
+    inline auto mol_bm_proj(NTL::GF2E& x, NTL::GF2E& y, NTL::GF2E& z,
             const NTL::GF2E& u, const NTL::GF2E& v, const long m,
-            const NTL::GF2E& d1, const NTL::GF2E& d2, const NTL::GF2E& a2) {
+            const NTL::GF2E& d1, const NTL::GF2E& d2, const NTL::GF2E& a2) ->
+        void
+    {
         auto b = half_trace(sqr(d1) + d2 + a2, m), tmp = sqr(d1) + d1 + d2;
         x = d1 * (b * u + v + (sqr(d1) + d1) * tmp);
         y = (x + d1 * u);

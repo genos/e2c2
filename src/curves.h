@@ -74,23 +74,23 @@ namespace e2c2 {
         }
 
         /// Equality test
-        bool operator==(const Curve& that) const {
+        auto operator==(const Curve& that) const -> bool {
             return (c == that.c) && (d == that.d) && (m == that.m);
         }
 
         /// Inequality test
-        bool operator!=(const Curve& that) const {
+        auto operator!=(const Curve& that) const -> bool {
             return not(*this == that);
         }
 
         /// Number of rational points on curve over field
-        NTL::ZZ cardinality() const {
+        auto cardinality() const -> NTL::ZZ {
             return m;
         }
 
         /// Output of curve's information
-        friend std::ostream& operator<<(std::ostream& out,
-                const Curve& curve) {
+        friend auto operator<<(std::ostream& out, const Curve& curve) ->
+            std::ostream& {
             out << getName(curve) << std::endl
                 << "Curve parameter #1: "  << curve.c << std::endl
                 << "Curve parameter #2: "  << curve.d << std::endl
@@ -114,7 +114,7 @@ namespace e2c2 {
      * @p getName(const OddCurve&)
      * @brief output of name
      */
-    inline std::string getName(const OddCurve&) {
+    inline auto getName(const OddCurve&) -> std::string {
         return std::string("Edwards Curve over odd field");
     }
 
@@ -122,7 +122,8 @@ namespace e2c2 {
      * @p parametersValid(const OddCurve& curve)
      * @brief Parameter validation
      */
-    inline bool parametersValid(const OddCurve& curve) {
+    inline auto parametersValid(const OddCurve& curve) -> bool
+    {
         return (curve.c != 0 && NTL::sqr(curve.c) + curve.c != curve.d);
     }
 
@@ -131,8 +132,9 @@ namespace e2c2 {
      *      const NTL::ZZ_pE& y)
      * @brief Validation of point coordinates
      */
-    inline bool curveEquation(const OddCurve& curve, const NTL::ZZ_pE& x,
-            const NTL::ZZ_pE& y) {
+    inline auto curveEquation(const OddCurve& curve, const NTL::ZZ_pE& x,
+            const NTL::ZZ_pE& y) -> bool
+    {
         auto xx = NTL::sqr(x), yy = NTL::sqr(y);
         return (xx + yy == NTL::sqr(curve.c) * (1 + curve.d * xx * yy));
     }
@@ -148,7 +150,8 @@ namespace e2c2 {
      * @p getName(const BinaryCurve&)
      * @brief output of name
      */
-    inline std::string getName(const BinaryCurve&) {
+    inline auto getName(const BinaryCurve&) -> std::string
+    {
         return "Binary Edwards Curve";
     }
 
@@ -156,7 +159,8 @@ namespace e2c2 {
      * @p parametersValid(const BinaryCurve& curve)
      * @brief Parameter validation
      */
-    inline bool parametersValid(const BinaryCurve& curve) {
+    inline auto parametersValid(const BinaryCurve& curve) -> bool
+    {
         return (curve.c * curve.d * (1 - curve.d * NTL::power(curve.c, 4)) !=
                 0);
     }
@@ -166,8 +170,9 @@ namespace e2c2 {
      *      const NTL::GF2E& y)
      * @brief Validation of point coordinates
      */
-    inline bool curveEquation(const BinaryCurve& curve, const NTL::GF2E& x,
-            const NTL::GF2E& y) {
+    inline auto curveEquation(const BinaryCurve& curve, const NTL::GF2E& x,
+            const NTL::GF2E& y) -> bool
+    {
         auto xx = NTL::sqr(x), yy = NTL::sqr(y);
         return (curve.c * (x + y) + curve.d * (xx + yy)
                 == (x + xx) * (y + yy));
@@ -184,7 +189,8 @@ namespace e2c2 {
      * @p getName(const TwistedCurve&)
      * @brief output of name
      */
-    inline std::string getName(const TwistedCurve&) {
+    inline auto getName(const TwistedCurve&) -> std::string
+    {
         return "Twisted Edwards Curve";
     }
 
@@ -192,7 +198,8 @@ namespace e2c2 {
      * @p parametersValid(const TwistedCurve& curve)
      * @brief Parameter validation
      */
-    inline bool parametersValid(const TwistedCurve& curve) {
+    inline auto parametersValid(const TwistedCurve& curve) -> bool
+    {
         return (curve.c != curve.d) || ((curve.c == 0) || (curve.d == 0));
     }
 
@@ -201,8 +208,9 @@ namespace e2c2 {
      *      const NTL::ZZ_pE& y)
      * @brief Validation of point coordinates
      */
-    inline bool curveEquation(const TwistedCurve& curve, const NTL::ZZ_pE& x,
-            const NTL::ZZ_pE& y) {
+    inline auto curveEquation(const TwistedCurve& curve, const NTL::ZZ_pE& x,
+            const NTL::ZZ_pE& y) -> bool
+    {
         auto xx = NTL::sqr(x), yy = NTL::sqr(y);
         return (curve.c * xx + yy == 1 + curve.d * xx * yy);
     }

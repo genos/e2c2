@@ -28,7 +28,8 @@ namespace e2c2 {
      * @brief This function counteracts the timing attack outlined in Brumley &
      * Tuveri's paper
      */
-    inline NTL::ZZ counterBTTiming(const NTL::ZZ& k, const NTL::ZZ& m) {
+    inline auto counterBTTiming(const NTL::ZZ& k, const NTL::ZZ& m) -> NTL::ZZ
+    {
         if (NTL::NumBits(k + m) == NTL::NumBits(m))
             return k + 2 * m;
         else
@@ -76,56 +77,57 @@ namespace e2c2 {
         }
 
         /// Checking whether we have the neutral element
-        bool isID() const {
+        auto isID() const -> bool {
             return *this == Affine(this->curve);
         }
 
         /// Two affine points are equal if all relevant info is the same...
-        bool operator==(const Affine& that) const {
+        auto operator==(const Affine& that) const -> bool {
             return (x == that.x) && (y == that.y) && (curve == that.curve);
         }
 
         /// ...and are not equal otherwise
-        bool operator !=(const Affine& that) const {
+        auto operator !=(const Affine& that) const -> bool {
             return !(*this == that);
         }
 
         /// Assignment by addition; left to fleshed-out classes
-        Affine& operator+=(const Affine& that) {
-            if (this->curve != that.curve)
+        auto operator+=(const Affine& that) -> Affine& {
+            if (this->curve != that.curve) {
                 throw DifferentCurvesException();
-
-            *this = aff_add(*this, that);
-            return *this;
+            } else {
+                *this = aff_add(*this, that);
+                return *this;
+            }
         }
 
         /// Negation of a point; left to full class
-        Affine operator-() const {
+        auto operator-() const -> Affine {
             return aff_neg(*this);
         }
 
         /// Assignment by subtraction; makes use of += and -
-        Affine& operator-=(const Affine& that) {
+        auto operator-=(const Affine& that) -> Affine& {
             return *this += -that;
         }
 
         /// Addition via +=
-        Affine operator+(const Affine& that) const {
+        auto operator+(const Affine& that) const -> Affine {
             return Affine(*this) += that;
         }
 
         /// Subtraction via -=
-        Affine operator-(const Affine& that) const {
+        auto operator-(const Affine& that) const -> Affine {
             return Affine(*this) -= that;
         }
 
         /// Point doubling; left to full class
-        Affine pointDouble() const {
+        auto pointDouble() const -> Affine {
             return aff_double(*this);
         }
 
         /// Montgomery Ladder for scalar multiplication
-        Affine montgomery(const NTL::ZZ& k) const {
+        auto montgomery(const NTL::ZZ& k) const -> Affine {
             // Work with positive scalars
             if (k < 0)
                 return (-(*this)).montgomery(-k);
@@ -148,32 +150,33 @@ namespace e2c2 {
         }
 
         /// Assignment by scalar multiplication (using Montgomery Ladder)
-        Affine& operator*=(const NTL::ZZ& k) {
+        auto operator*=(const NTL::ZZ& k) -> Affine& {
             return *this = montgomery(k);
         }
 
         /// Assignment by scalar multiplication (using Montgomery Ladder)
         template <class N>
-        Affine& operator*=(const N& k) {
+        auto operator*=(const N& k) -> Affine& {
             return *this = montgomery(NTL::to_ZZ(k));
         }
 
         /// Scalar multiplication (using Montgomery Ladder), via *= (e.g. k *
         /// point)
-        friend Affine operator*(const NTL::ZZ& k, const Affine& point) {
+        friend auto operator*(const NTL::ZZ& k, const Affine& point) ->
+            Affine {
             return Affine(point) *= k;
         }
 
         /// Scalar multiplication (using Montgomery Ladder), via *= (e.g. k *
         /// point)
         template <class N>
-        friend Affine operator*(const N& k, const Affine& point) {
+        friend auto operator*(const N& k, const Affine& point) -> Affine {
             return Affine(point) *= NTL::to_ZZ(k);
         }
 
         /// Output
-        friend std::ostream& operator<<(std::ostream& out, const Affine&
-                                        point) {
+        friend auto operator<<(std::ostream& out, const Affine&
+                                        point) -> std::ostream& {
             return (out <<"(" << point.x << ", " << point.y << ")");
         }
     };
@@ -223,36 +226,37 @@ namespace e2c2 {
         explicit Projective(const Affine<Elt, Curve>& a) : x(a.x), y(a.y), z(),
                 curve(a.curve) {
             z = 1;
-            if (!curveEquation(curve, x / z, y / z))
+            if (!curveEquation(curve, x / z, y / z)) {
                 throw InvalidParametersException();
+            }
         }
 
         /// Equivalence class representative: z = 1
-        Projective equivalenceClassRep() const {
+        auto equivalenceClassRep() const -> Projective {
             Elt one;
             one = 1;
             return Projective(x / z, y / z, one, curve);
         }
 
         /// Checking whether we have the neutral element
-        bool isID() const {
+        auto isID() const -> bool {
             return *this == Projective(this->curve);
         }
 
         /// Two projective points are equal iff all relevant info is the
         /// same...
-        bool operator==(const Projective& that) const {
+        auto operator==(const Projective& that) const -> bool {
             return (x / z == that.x / that.z) && (y / z == that.y / that.z) &&
                 (curve == that.curve);
         }
 
         /// ...and are not equal otherwise
-        bool operator !=(const Projective& that) const {
+        auto operator !=(const Projective& that) const -> bool {
             return !(*this == that);
         }
 
         /// Assignment by addition; left to fleshed-out class specificities
-        Projective& operator+=(const Projective& that) {
+        auto operator+=(const Projective& that) -> Projective& {
             if (this->curve != that.curve)
                 throw DifferentCurvesException();
 
@@ -261,35 +265,36 @@ namespace e2c2 {
         }
 
         /// Negation of a point; left to class specificities
-        Projective operator-() const {
+        auto operator-() const -> Projective {
             return proj_neg(*this);
         }
 
         /// Assignment by subtraction; makes use of += and -
-        Projective& operator-=(const Projective& that) {
+        auto operator-=(const Projective& that) -> Projective& {
             return *this += -that;
         }
 
         /// Addition via +=
-        Projective operator+(const Projective& that) const {
+        auto operator+(const Projective& that) const -> Projective {
             return Projective(*this) += that;
         }
 
         /// Subtraction via -=
-        Projective operator-(const Projective& that) const {
+        auto operator-(const Projective& that) const -> Projective {
             return Projective(*this) -= that;
         }
 
         /// Point doubling; left to class specifics
-        Projective pointDouble() const {
+        auto pointDouble() const -> Projective {
             return proj_double(*this);
         }
 
         /// Montgomery Ladder for scalar multiplication
-        Projective montgomery(const NTL::ZZ& k) const {
+        auto montgomery(const NTL::ZZ& k) const -> Projective {
             // Work with positive scalars
-            if (k < 0)
+            if (k < 0) {
                 return (-(*this)).montgomery(-k);
+            }
 
             // Counteract Brumley & Tuveri's timing attack
             NTL::ZZ kk = counterBTTiming(k, curve.cardinality());
@@ -309,34 +314,35 @@ namespace e2c2 {
         }
 
         /// Assignment by scalar multiplication (using Montgomery Ladder)
-        Projective& operator*=(const NTL::ZZ& k) {
+        auto operator*=(const NTL::ZZ& k) -> Projective& {
             return *this = montgomery(k);
         }
 
         /// Assignment by scalar multiplication (using Montgomery Ladder)
         template <class N>
-        Projective& operator*=(const N& k) {
+        auto operator*=(const N& k) -> Projective& {
             return *this = montgomery(NTL::to_ZZ(k));
         }
 
         /// Scalar multiplication (using Montgomery Ladder), via *= (e.g. k *
         /// point)
-        friend Projective operator*(const NTL::ZZ& k,
-            const Projective& point) {
+        friend auto operator*(const NTL::ZZ& k,
+            const Projective& point) -> Projective {
             return Projective(point) *= k;
         }
 
         /// Scalar multiplication (using Montgomery Ladder), via *= (e.g. k *
         /// point)
         template <class N>
-        friend Projective operator*(const N& k, const Projective& point) {
+        friend auto operator*(const N& k, const Projective& point) ->
+        Projective {
             return Projective(point) *= NTL::to_ZZ(k);
         }
 
 
         /// Output
-        friend std::ostream& operator<<(std::ostream& out,
-                const Projective& point) {
+        friend auto operator<<(std::ostream& out,
+                const Projective& point) -> std::ostream& {
             Projective tmp = point.equivalenceClassRep();
             return (out << "(" << tmp.x << " : " << tmp.y << " : " << tmp.z <<
                     ")" );
@@ -360,7 +366,8 @@ namespace e2c2 {
      * @p aff_id(const OddCurve& curve)
      * @brief Affine neutral element on odd curve.
      */
-    inline OddAff aff_id(const OddCurve& curve) {
+    inline auto aff_id(const OddCurve& curve) -> OddAff
+    {
         return OddAff(NTL::ZZ_pE::zero(), curve.c, curve);
     }
 
@@ -368,7 +375,8 @@ namespace e2c2 {
      * @p aff_add(const OddAff& a1, const OddAff& a2)
      * @brief Affine addition for points on an odd curve.
      */
-    inline OddAff aff_add(const OddAff& a1, const OddAff& a2) {
+    inline auto aff_add(const OddAff& a1, const OddAff& a2) -> OddAff
+    {
         NTL::ZZ_pE w, num_x, num_y, den_x, den_y;
         w = a1.curve.d * a1.x * a2.x * a1.y * a2.y;
         num_x = a1.x * a2.y + a1.y * a2.x;
@@ -385,7 +393,8 @@ namespace e2c2 {
      * @p aff_neg(const OddAff& a)
      * @brief Negation of an affine point on an odd curve.
      */
-    inline OddAff aff_neg(const OddAff& a) {
+    inline auto aff_neg(const OddAff& a) -> OddAff
+    {
         return OddAff(-a.x, a.y, a.curve);
     }
 
@@ -418,7 +427,8 @@ namespace e2c2 {
      * @p aff_id(const BinaryCurve& curve)
      * @brief Affine neutral element on binary curve.
      */
-    inline BinaryAff aff_id(const BinaryCurve& curve) {
+    inline auto aff_id(const BinaryCurve& curve) -> BinaryAff
+    {
         return BinaryAff(NTL::GF2E::zero(), NTL::GF2E::zero(), curve);
     }
 
@@ -426,7 +436,8 @@ namespace e2c2 {
      * @p aff_add(const BinaryAff& a1, const BinaryAff& a2)
      * @brief Affine addition for points on a binary curve.
      */
-    inline BinaryAff aff_add(const BinaryAff& a1, const BinaryAff& a2) {
+    inline auto aff_add(const BinaryAff& a1, const BinaryAff& a2) -> BinaryAff
+    {
         auto w1 = a1.x + a1.y;
         auto w2 = a2.x + a2.y;
         auto a = NTL::sqr(a1.x) + a1.x;
@@ -446,7 +457,8 @@ namespace e2c2 {
      * @p aff_neg(const BinaryAff& a)
      * @brief Negation of an affine point on a binary curve.
      */
-    inline BinaryAff aff_neg(const BinaryAff& a) {
+    inline auto aff_neg(const BinaryAff& a) -> BinaryAff
+    {
         return BinaryAff(a.y, a.x, a.curve);
     }
 
@@ -454,7 +466,8 @@ namespace e2c2 {
      * @p aff_double(const BinaryAff& a)
      * @brief Affine point doubling on binary curve.
      */
-    inline BinaryAff aff_double(const BinaryAff& a) {
+    inline auto aff_double(const BinaryAff& a) -> BinaryAff
+    {
         auto aa = NTL::sqr(a.x);
         auto b = NTL::sqr(aa);
         auto c = NTL::sqr(a.y);
@@ -475,8 +488,9 @@ namespace e2c2 {
      * const BinaryCurve& curve)
      * @brief Birational Map from Weierstrass curve to Binary Edwards curve.
      */
-    inline BinaryAff birMapAff(const NTL::GF2E& u, const NTL::GF2E& v,
-            const NTL::GF2E& a2, const BinaryCurve& curve) {
+    inline auto birMapAff(const NTL::GF2E& u, const NTL::GF2E& v,
+            const NTL::GF2E& a2, const BinaryCurve& curve) -> BinaryAff
+    {
         NTL::GF2E x, y;
         mol_bm_aff(x, y, u, v, NTL::GF2E::degree(), curve.c, curve.d, a2);
         return BinaryAff(x, y, curve);
@@ -496,7 +510,8 @@ namespace e2c2 {
      * @p aff_id(const TwistedCurve& curve)
      * @brief Affine neutral element on twisted curve.
      */
-    inline TwistedAff aff_id(const TwistedCurve& curve) {
+    inline auto aff_id(const TwistedCurve& curve) -> TwistedAff
+    {
         return TwistedAff(NTL::ZZ_pE::zero(), NTL::to_ZZ_pE(1), curve);
     }
 
@@ -504,7 +519,9 @@ namespace e2c2 {
      * @p aff_add(const TwistedAff& a1, const TwistedAff& a2)
      * @brief Affine addition for points on a twisted curve.
      */
-    inline TwistedAff aff_add(const TwistedAff& a1, const TwistedAff& a2) {
+    inline auto aff_add(const TwistedAff& a1, const TwistedAff& a2) ->
+        TwistedAff
+    {
         auto w = a1.curve.d * a1.x * a2.x * a1.y * a2.y;
         auto num_x = a1.x * a2.y + a1.y * a2.x;
         auto num_y = a1.y * a2.y - a1.curve.d * a1.x * a2.x;
@@ -518,7 +535,8 @@ namespace e2c2 {
      * @p aff_neg(const TwistedAff& a)
      * @brief Negation of an affine point on a twisted curve.
      */
-    inline TwistedAff aff_neg(const TwistedAff& a) {
+    inline auto aff_neg(const TwistedAff& a) -> TwistedAff
+    {
         return TwistedAff(-a.x, a.y, a.curve);
     }
 
@@ -526,7 +544,8 @@ namespace e2c2 {
      * @p aff_double(const TwistedAff& a)
      * @brief Affine point doubling on a twisted curve.
      */
-    inline TwistedAff aff_double(const TwistedAff& a) {
+    inline auto aff_double(const TwistedAff& a) -> TwistedAff
+    {
         auto b = NTL::sqr(a.x + a.y);
         auto c = NTL::sqr(a.x);
         auto d = NTL::sqr(a.y);
@@ -556,7 +575,8 @@ namespace e2c2 {
      * @p proj_id(const OddCurve& curve)
      * @brief Projective neutral element on odd curve.
      */
-    inline OddProj proj_id(const OddCurve& curve) {
+    inline auto proj_id(const OddCurve& curve) -> OddProj
+    {
         return OddProj(NTL::ZZ_pE::zero(),
                 curve.c,
                 NTL::to_ZZ_pE(1),
@@ -567,7 +587,8 @@ namespace e2c2 {
      * @p proj_add(const OddProj& p1, const OddProj& p2)
      * @brief Projective addition for points on an odd curve.
      */
-    inline OddProj proj_add(const OddProj& p1, const OddProj& p2) {
+    inline auto proj_add(const OddProj& p1, const OddProj& p2) -> OddProj
+    {
         // From Bernstein & Lange, "Faster Addition and Doubling on Elliptic
         // Curves"
         auto a = p1.z * p2.z;
@@ -587,7 +608,8 @@ namespace e2c2 {
      * @p proj_neg(const OddProj& p)
      * @brief Negation of an projective point on an odd curve.
      */
-    inline OddProj proj_neg(const OddProj& p) {
+    inline auto proj_neg(const OddProj& p) -> OddProj
+    {
         return OddProj(-p.x, p.y, p.z, p.curve);
     }
 
@@ -595,7 +617,8 @@ namespace e2c2 {
      * @p proj_double(const OddProj& p)
      * @brief Projective point doubling on odd curve.
      */
-    inline OddProj proj_double(const OddProj& p) {
+    inline auto proj_double(const OddProj& p) -> OddProj
+    {
         /// From Bernstein & Lange, "Faster Addition and Doubling on Elliptic
         /// Curves"
         auto b = NTL::sqr(p.x + p.y);
@@ -624,7 +647,8 @@ namespace e2c2 {
      * @p proj_id(const BinaryCurve& curve)
      * @brief Projective neutral element on binary curve.
      */
-    inline BinaryProj proj_id(const BinaryCurve& curve) {
+    inline auto proj_id(const BinaryCurve& curve) -> BinaryProj
+    {
         return BinaryProj(NTL::GF2E::zero(),
                           NTL::GF2E::zero(),
                           NTL::to_GF2E(1),
@@ -635,7 +659,9 @@ namespace e2c2 {
      * @p proj_add(const BinaryProj& p1, const BinaryProj& p2)
      * @brief Projective addition for points on a binary curve.
      */
-    inline BinaryProj proj_add(const BinaryProj& p1, const BinaryProj& p2) {
+    inline auto proj_add(const BinaryProj& p1, const BinaryProj& p2) ->
+        BinaryProj
+    {
         /// from Bernstein, Lange, and Farashahi, "Binary Edwards Curves"
         auto w1 = p1.x + p1.y;
         auto w2 = p2.x + p2.y;
@@ -660,7 +686,8 @@ namespace e2c2 {
      * @p proj_neg(const BinaryProj& p)
      * @brief Negation of an projective point on a binary curve.
      */
-    inline BinaryProj proj_neg(const BinaryProj& p) {
+    inline auto proj_neg(const BinaryProj& p) -> BinaryProj
+    {
         return BinaryProj(p.y, p.x, p.z, p.curve);
     }
 
@@ -668,7 +695,8 @@ namespace e2c2 {
      * @p proj_double(const BinaryProj& p)
      * @brief Projective point doubling on binary curve.
      */
-    inline BinaryProj proj_double(const BinaryProj& p) {
+    inline auto proj_double(const BinaryProj& p) -> BinaryProj
+    {
         /// from Bernstein, Lange, and Farashahi, "Binary Edwards Curves"
         auto a = NTL::sqr(p.x);
         auto b = NTL::sqr(a);
@@ -689,8 +717,9 @@ namespace e2c2 {
      * const BinaryCurve& curve)
      * @brief Birational Map from Weierstrass curve to Binary Edwards curve.
      */
-    inline BinaryProj birMapProj(const NTL::GF2E& u, const NTL::GF2E& v,
-            const NTL::GF2E& a2, const BinaryCurve& curve) {
+    inline auto birMapProj(const NTL::GF2E& u, const NTL::GF2E& v,
+            const NTL::GF2E& a2, const BinaryCurve& curve) -> BinaryProj
+    {
         NTL::GF2E x, y, z;
         mol_bm_proj(x, y, z, u, v, NTL::GF2E::degree(), curve.c, curve.d,  a2);
         return BinaryProj(x, y, z, curve);
@@ -710,7 +739,8 @@ namespace e2c2 {
      * @p proj_id(const TwistedCurve& curve)
      * @brief Projective neutral element on twisted curve.
      */
-    inline TwistedProj proj_id(const TwistedCurve& curve) {
+    inline auto proj_id(const TwistedCurve& curve) -> TwistedProj
+    {
         return TwistedProj(NTL::ZZ_pE::zero(),
                            NTL::to_ZZ_pE(1),
                            NTL::to_ZZ_pE(1),
@@ -721,7 +751,9 @@ namespace e2c2 {
      * @p proj_add(const TwistedProj& p1, const TwistedProj& p2)
      * @brief Projective addition for points on a twisted curve.
      */
-    inline TwistedProj proj_add(const TwistedProj& p1, const TwistedProj& p2) {
+    inline auto proj_add(const TwistedProj& p1, const TwistedProj& p2) ->
+        TwistedProj
+    {
         /// From Bernstein, Birkner, Joye, Lange, Peters, "Twisted Edwards
         /// Curves"
         auto a = p1.z * p2.z;
@@ -741,7 +773,8 @@ namespace e2c2 {
      * @p proj_neg(const TwistedProj& p)
      * @brief Negation of an projective point on a twisted curve.
      */
-    inline TwistedProj proj_neg(const TwistedProj& p) {
+    inline auto proj_neg(const TwistedProj& p) -> TwistedProj
+    {
         return TwistedProj(-p.x, p.y, p.z, p.curve);
     }
 
@@ -749,7 +782,8 @@ namespace e2c2 {
      * @p proj_double(const TwistedProj& p)
      * @brief Projective point doubling on twisted curve.
      */
-    inline TwistedProj proj_double(const TwistedProj& p) {
+    inline auto proj_double(const TwistedProj& p) -> TwistedProj
+    {
         /// From Bernstein, Birkner, Joye, Lange, Peters, "Twisted Edwards
         /// Curves"
         auto b = NTL::sqr(p.x + p.y);

@@ -26,7 +26,8 @@ const size_t I_LEN = 64;
 /// Helps omega() decide which coordinate to use
 enum class Coord { X, Y };
 
-string ZZtoHex(const ZZ& z) {
+auto ZZtoHex(const ZZ& z) -> string
+{
     /// The hex representation of z
     static const size_t out_len = (B_LEN + I_LEN) >> 4;
     static const string digits = "0123456789abcdef";
@@ -53,7 +54,8 @@ string ZZtoHex(const ZZ& z) {
     }
 }
 
-ZZ StoZZ(const string& s) {
+auto StoZZ(const string& s) -> ZZ
+{
     /// Treat a string of characters as a bunch of bytes (ASCII), then use
     /// those bytes to build a ZZ
     size_t i = 0;
@@ -70,7 +72,8 @@ ZZ StoZZ(const string& s) {
     return z;
 }
 
-ZZ GF2EtoZZ(const GF2E& x) {
+auto GF2EtoZZ(const GF2E& x) -> ZZ
+{
     /// Use the bit representation of x to create a ZZ
     GF2X::HexOutput = false;
     auto z = ZZ::zero();
@@ -93,7 +96,8 @@ ZZ GF2EtoZZ(const GF2E& x) {
     return z;
 }
 
-GF2E ZZtoGF2E(const ZZ& z) {
+auto ZZtoGF2E(const ZZ& z) -> GF2E
+{
     /// Use the bit representation of z to create a GF2E
     auto x = GF2E::zero();
     stringstream ss;
@@ -108,7 +112,8 @@ GF2E ZZtoGF2E(const ZZ& z) {
 
 
 //------- ECOH's Echo Helpers -------//
-ZZ block(const size_t i) {
+auto block(const size_t i) -> ZZ
+{
     /// The ith block O_i is (random)^{B_LEN - I_LEN} || {I_LEN bit repr of i},
     /// similar to the original ECOH submission
     auto O = (RandomBits_ZZ(B_LEN - I_LEN)) << I_LEN;
@@ -116,7 +121,8 @@ ZZ block(const size_t i) {
     return O;
 }
 
-ZZ omega(const BinaryAff& Q, const BinaryAff& G, const Coord z) {
+auto omega(const BinaryAff& Q, const BinaryAff& G, const Coord z) -> ZZ
+{
     /// Output, based on coordinate, of bit-length B_LEN
     if (z == Coord::X) {
         return GF2EtoZZ((Q + (GF2EtoZZ(Q.x) / 2) * G).x) / 2 %
@@ -127,8 +133,9 @@ ZZ omega(const BinaryAff& Q, const BinaryAff& G, const Coord z) {
     }
 }
 
-BinaryAff pi(const GF2E& z, const GF2E& a2, const GF2E& a6,
-        const BinaryCurve& E) {
+auto pi(const GF2E& z, const GF2E& a2, const GF2E& a6,
+        const BinaryCurve& E) -> BinaryAff
+{
     /// Uses Icart's f from "How to Hash into Elliptic Curves" and Moloney,
     /// O'Mahony, & Laurent's birational map from "Efficient Implementation of
     /// Elliptic Curve Point Operations Using Binary Edwards Curves"
@@ -141,8 +148,9 @@ BinaryAff pi(const GF2E& z, const GF2E& a2, const GF2E& a6,
 
 
 //------- ECOH's Echo -------//
-ZZ ecoh_echo(const ZZ& password, const ZZ& salt, const GF2E& a2,
-        const GF2E& a6, const BinaryCurve& E, const BinaryAff& G) {
+auto ecoh_echo(const ZZ& password, const ZZ& salt, const GF2E& a2,
+        const GF2E& a6, const BinaryCurve& E, const BinaryAff& G) -> ZZ
+{
     /// Our PBKDF
 
     /// Helpers defined as lambda expressions
@@ -171,7 +179,8 @@ ZZ ecoh_echo(const ZZ& password, const ZZ& salt, const GF2E& a2,
 
 
 //------- An Example -------//
-int main(int argc, char *argv[]) {
+auto main(int argc, char *argv[]) -> int
+{
     //------- Error Checking -------//
     if (argc != 3) {
         cerr << "usage: " << argv[0] << " salt password" << endl;

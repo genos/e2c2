@@ -31,8 +31,9 @@ namespace e2c2 {
      * of NTL.
      */
     template <class T>
-    void set_parameter(T& param, const std::string& value,
-            const bool& hex_and_rev=false) {
+    auto set_parameter(T& param, const std::string& value,
+            const bool& hex_and_rev=false)  -> void
+    {
         std::stringstream ss;
         std::ostream& out = ss;
         std::istream& in = ss;

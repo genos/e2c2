@@ -21,7 +21,8 @@ using namespace e2c2;
  * This function shows how to use our projective points on a Binary Edwards
  * Curve to conduct a Diffie-Hellman key exchange.
  */
-int main(int argc, char *argv[]) {
+auto main(int argc, char *argv[]) -> int
+{
     /// Our irred. polynomial is x^163 + x^7 + x^6 + x^3 + 1, per FIPS 186-3
     GF2E::init(GF2X(163, 1) + GF2X(7, 1) + GF2X(6, 1) + GF2X(3, 1) +
                GF2X(0, 1));
