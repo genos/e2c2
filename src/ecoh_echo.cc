@@ -26,8 +26,7 @@ const size_t I_LEN = 64;
 /// Helps omega() decide which coordinate to use
 enum class Coord { X, Y };
 
-auto ZZtoHex(const ZZ& z) -> string
-{
+auto ZZtoHex(const ZZ& z) -> string {
     /// The hex representation of z
     static const size_t out_len = (B_LEN + I_LEN) >> 4;
     static const string digits = "0123456789abcdef";
@@ -54,8 +53,7 @@ auto ZZtoHex(const ZZ& z) -> string
     }
 }
 
-auto StoZZ(const string& s) -> ZZ
-{
+auto StoZZ(const string& s) -> ZZ {
     /// Treat a string of characters as a bunch of bytes (ASCII), then use
     /// those bytes to build a ZZ
     size_t i = 0;
@@ -72,8 +70,7 @@ auto StoZZ(const string& s) -> ZZ
     return z;
 }
 
-auto GF2EtoZZ(const GF2E& x) -> ZZ
-{
+auto GF2EtoZZ(const GF2E& x) -> ZZ {
     /// Use the bit representation of x to create a ZZ
     GF2X::HexOutput = false;
     auto z = ZZ::zero();
@@ -96,8 +93,7 @@ auto GF2EtoZZ(const GF2E& x) -> ZZ
     return z;
 }
 
-auto ZZtoGF2E(const ZZ& z) -> GF2E
-{
+auto ZZtoGF2E(const ZZ& z) -> GF2E {
     /// Use the bit representation of z to create a GF2E
     auto x = GF2E::zero();
     stringstream ss;
@@ -112,8 +108,7 @@ auto ZZtoGF2E(const ZZ& z) -> GF2E
 
 
 //------- ECOH's Echo Helpers -------//
-auto block(const size_t i) -> ZZ
-{
+auto block(const size_t i) -> ZZ {
     /// The ith block O_i is (random)^{B_LEN - I_LEN} || {I_LEN bit repr of i},
     /// similar to the original ECOH submission
     auto O = (RandomBits_ZZ(B_LEN - I_LEN)) << I_LEN;
@@ -121,27 +116,25 @@ auto block(const size_t i) -> ZZ
     return O;
 }
 
-auto omega(const BinaryAff& Q, const BinaryAff& G, const Coord z) -> ZZ
-{
+auto omega(const BinaryAff& Q, const BinaryAff& G, const Coord z) -> ZZ {
     /// Output, based on coordinate, of bit-length B_LEN
     if (z == Coord::X) {
         return GF2EtoZZ((Q + (GF2EtoZZ(Q.x) / 2) * G).x) / 2 %
-            power2_ZZ(B_LEN);
+        power2_ZZ(B_LEN);
     } else {  /// z == Coord::Y
         return GF2EtoZZ((Q + (GF2EtoZZ(Q.y) / 2) * G).y) / 2 %
-            power2_ZZ(B_LEN);
+        power2_ZZ(B_LEN);
     }
 }
 
 auto pi(const GF2E& z, const GF2E& a2, const GF2E& a6,
-        const BinaryCurve& E) -> BinaryAff
-{
+        const BinaryCurve& E) -> BinaryAff {
     /// Uses Icart's f from "How to Hash into Elliptic Curves" and Moloney,
     /// O'Mahony, & Laurent's birational map from "Efficient Implementation of
     /// Elliptic Curve Point Operations Using Binary Edwards Curves"
     const auto alpha = a2 + z + sqr(z);
     const auto u = power(power(alpha, 4) + power(alpha, 3) + a6,
-                         (2 * GF2E::cardinality() - 1) / 3) + alpha;
+    (2 * GF2E::cardinality() - 1) / 3) + alpha;
     const auto v = z * u + sqr(alpha);
     return birMapAff(u, v, a2, E);
 }
@@ -149,13 +142,16 @@ auto pi(const GF2E& z, const GF2E& a2, const GF2E& a6,
 
 //------- ECOH's Echo -------//
 auto ecoh_echo(const ZZ& password, const ZZ& salt, const GF2E& a2,
-        const GF2E& a6, const BinaryCurve& E, const BinaryAff& G) -> ZZ
-{
+               const GF2E& a6, const BinaryCurve& E, const BinaryAff& G) -> ZZ {
     /// Our PBKDF
 
     /// Helpers defined as lambda expressions
-    auto phi = [&G](const BinaryAff& P){ return omega(P, G, Coord::X); };
-    auto psi = [&G](const BinaryAff& P){ return omega(P, G, Coord::Y) & 1; };
+    auto phi = [&G](const BinaryAff & P) {
+        return omega(P, G, Coord::X);
+    };
+    auto psi = [&G](const BinaryAff & P) {
+        return omega(P, G, Coord::Y) & 1;
+    };
 
     /// Memory efficient version
     SetSeed(salt ^ password);
@@ -179,8 +175,7 @@ auto ecoh_echo(const ZZ& password, const ZZ& salt, const GF2E& a2,
 
 
 //------- An Example -------//
-auto main(int argc, char *argv[]) -> int
-{
+auto main(int argc, char *argv[]) -> int {
     //------- Error Checking -------//
     if (argc != 3) {
         cerr << "usage: " << argv[0] << " salt password" << endl;
@@ -190,15 +185,15 @@ auto main(int argc, char *argv[]) -> int
     //------- Setup -------//
     /// Our irred. polynomial is x^163 + x^7 + x^6 + x^3 + 1, per FIPS 186-3
     GF2E::init(GF2X(163, 1) + GF2X(7, 1) + GF2X(6, 1) + GF2X(3, 1) +
-               GF2X(0, 1));
-    GF2X::HexOutput = true;  /// more compact output 
+    GF2X(0, 1));
+    GF2X::HexOutput = true;  /// more compact output
     auto a2 = to_GF2E(1), a6 = GF2E::zero();
     /// a6 = b in Fips 186-3 language
     set_parameter(a6, "20a601907b8c953ca1481eb10512f78744a3205fd", true);
     auto E = from_weierstrass(163,
-            to_ZZ("5846006549323611672814742442876390689256843201587"),
-            a2,
-            a6);
+    to_ZZ("5846006549323611672814742442876390689256843201587"),
+    a2,
+    a6);
     auto u = GF2E::zero(), v = GF2E::zero();
     set_parameter(u, "3f0eba16286a2d57ea0991168d4994637e8343e36", true);
     set_parameter(v, "0d51fbc6c71a0094fa2cdd545b11c5c0c797324f1", true);
