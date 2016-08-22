@@ -1,5 +1,7 @@
 # e2c2: Edwards Elliptic Curve Cryptography
 
+[![Build Status](https://travis-ci.org/genos/e2c2.svg?branch=master)](https://travis-ci.org/genos/e2c2)
+
 The group of rational points on an elliptic curve over a finite fields has
 proven very useful in cryptography since Koblitz and Miller first suggested its
 use in the 1980s. Due to the lack of subexponential algorithms for the Discrete
