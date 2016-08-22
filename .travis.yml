@@ -1,11 +1,10 @@
 language: cpp
-sudo: false
+sudo: true
 compiler: clang
-addons:
-  apt:
-    packages:
-      - libgmp-dev
-      - libntl-dev
+before_install:
+  - sudo apt-get -qq update
+install:
+  - sudo apt-get install -y libgmp-dev libntl-dev
 script:
   - cd src/
   - make -j
