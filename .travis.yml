@@ -1,12 +1,9 @@
-sudo: required
 language: cpp
-os:
-  - linux
-  - osx
+sudo: required
 compiler: clang
 before_install:
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get -qq update; sudo apt-get install -y libgmp-dev libntl-dev; fi
-  - if [ $TRAVIS_OS_NAME == osx ]; then brew update; brew install gmp ntl; fi
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libgmp-dev libntl-dev
 script:
   - cd src/
   - make -j
