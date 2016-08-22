@@ -1,4 +1,4 @@
-link = cxx = "g++-4.7"
+link = cxx = "g++"
 env = Environment(CXX=cxx,
                   CXXFLAGS="-Wall -Wextra -Weffc++ -pedantic -O3 -m64 -std=c++11",
                   LINK=link,

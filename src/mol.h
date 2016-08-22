@@ -15,7 +15,7 @@
 #include <NTL/ZZ.h>         // Arbitrarily large integers
 #include <NTL/ZZ_pE.h>      // Field elements from @f$ \mathbf{F}_{p^n} @f$
 #include <NTL/GF2E.h>       // Field elements from @f$ \mathbf{F}_{2^n} @f$
-#include "curves.h"         // Edwards curves (and variations) 
+#include "curves.h"         // Edwards curves (and variations)
 #include "utilities.h"      // Utilities header for e2c2 project
 
 
@@ -23,7 +23,7 @@
 namespace e2c2 {
 
     /// Per MOL paper, \f$\sqrt{\alpha} = \alpha^{2^{m-1}}\f$
-    inline const auto gf2m_sqrt(const NTL::GF2E& alpha, const long& m) ->
+    inline auto gf2m_sqrt(const NTL::GF2E& alpha, const long& m) ->
         NTL::GF2E
     {
         auto s = alpha;
@@ -35,7 +35,7 @@ namespace e2c2 {
 
 
     /// Half-Trace function
-    inline const auto half_trace(const NTL::GF2E& alpha, const long m) ->
+    inline auto half_trace(const NTL::GF2E& alpha, const long m) ->
         NTL::GF2E
     {
         auto ht = NTL::GF2E::zero();
@@ -49,7 +49,7 @@ namespace e2c2 {
 
 
     /// MOL's Algorithm 1 to compute d1
-    inline const auto mol_alg_1(const long& n, const NTL::GF2E& a2,
+    inline auto mol_alg_1(const long& n, const NTL::GF2E& a2,
             const NTL::GF2E& a6) -> NTL::GF2E
     {
         auto t = trace(a2), r = trace(a6);
