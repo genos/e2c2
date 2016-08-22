@@ -9,6 +9,7 @@ os:
 before_install:
   - if [ $TRAVIS_OS_NAME == linux]; then sudo apt-get -qq update; apt-get install -y libgmp-dev libntl-dev; fi
   - if [ $TRAVIS_OS_NAME == osx]; then brew update; brew install gmp ntl; fi
+  - cd src/
 install: true
 script:
   - make -j
