@@ -1,21 +1,48 @@
+# see http://genbattle.bitbucket.org/blog/2016/01/17/c++-travis-ci/
 sudo: required
-langage: cpp
-compiler:
-  - gcc
-  - clang
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise-3.6
-    packages:
-      - gcc-5
-      - g++-5
-      - clang-3.6
-      - libgmp-dev
-      - libntl-dev
+dist: precise
+language: cpp
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+      env: COMPILER=g++-4.9
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env: COMPILER=g++-5
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+          packages:
+            - clang-3.6
+      env: COMPILER=clang++-3.6
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+          packages:
+            - clang-3.7
+      env: COMPILER=clang++-3.7
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y libgmp-dev libntl-dev
 script:
   - cd src/
-  - make -j
+  - CXX=$COMPILER make -j
   - make test
   - make clean
